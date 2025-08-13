@@ -5,9 +5,9 @@ pnpm run format
 
 # Check for changes after formatting
 if ! git diff --quiet; then
-  echo "✨ Some files were changed by formatting."
-  echo "💡 Please review and stage them before committing."
+  echo "\033[33m🚫 Some files were changed by formatting."
+  echo "💡 Please review and stage them before committing.\033[0m"
   exit 1
 else
-  echo "✅ No changes after formatting."
+  echo "\033[32m✅ No changes after formatting.\033[0m"
 fi

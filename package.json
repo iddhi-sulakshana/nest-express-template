@@ -22,7 +22,8 @@
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push",
     "format": "prettier --write '**/*.{js,jsx,ts,tsx,css,md,json,scss,html}' --config ./.prettierrc",
-    "prepare": "husky"
+    "prepare": "husky",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
