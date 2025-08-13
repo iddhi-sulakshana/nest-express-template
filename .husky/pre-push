@@ -1,0 +1,9 @@
+branch_name=$(git symbolic-ref --short HEAD)
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "develop" ] || [ "$branch_name" = "staging" ] || [ "$branch_name" = "production" ]; then
+  echo "\033[31m🚫 Direct pushes to locked branches are not allowed!\033[0m"
+  exit 1
+fi
+
+pnpm run format
+git update-index --again
+pnpm run type-check

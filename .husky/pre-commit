@@ -1,0 +1,22 @@
+echo "🔍 Running Pre-commit checks..."
+
+branch_name=$(git symbolic-ref --short HEAD)
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "develop" ] || [ "$branch_name" = "staging" ] || [ "$branch_name" = "production" ]; then
+  echo "\033[31m🚫 Direct pushes to locked branches are not allowed!\033[0m"
+  exit 1
+fi
+
+# Run formatter
+pnpm run format
+
+# Run type check
+pnpm run type-check
+
+# Check for changes after formatting
+if ! git diff --quiet; then
+  echo "\033[33m🚫 Some files were changed by formatting."
+  echo "💡 Please review and stage them before committing.\033[0m"
+  exit 1
+else
+  echo "\033[32m✅ No changes after formatting.\033[0m"
+fi

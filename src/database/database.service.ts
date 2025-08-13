@@ -6,8 +6,8 @@ import { getDatabaseConfig } from './database.config';
 
 @Injectable()
 export class DatabaseService implements OnModuleInit, OnModuleDestroy {
-  private client: postgres.Sql;
-  public db: ReturnType<typeof drizzle>;
+  private client!: postgres.Sql;
+  public db!: ReturnType<typeof drizzle>;
 
   constructor(private configService: ConfigService) {}
 
