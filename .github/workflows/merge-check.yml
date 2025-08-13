@@ -41,5 +41,3 @@ jobs:
 
       - name: Build project
         run: pnpm run build
-
-      # Run test if available
