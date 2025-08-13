@@ -30,10 +30,7 @@ export class UsersRepository {
     return result[0];
   }
 
-  async update(
-    id: number,
-    userData: Partial<NewUser>,
-  ): Promise<User | undefined> {
+  async update(id: number, userData: Partial<NewUser>): Promise<User | undefined> {
     const db = this.databaseService.getDb();
     const result = await db
       .update(users)

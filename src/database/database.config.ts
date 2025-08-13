@@ -8,8 +8,5 @@ export const getDatabaseConfig = (configService: ConfigService) => ({
   database: configService.get<string>('DB_NAME', 'nest_fastify_db'),
   max: configService.get<number>('DB_POOL_MAX', 10),
   idleTimeoutMillis: configService.get<number>('DB_IDLE_TIMEOUT', 30000),
-  connectionTimeoutMillis: configService.get<number>(
-    'DB_CONNECTION_TIMEOUT',
-    2000,
-  ),
+  connectionTimeoutMillis: configService.get<number>('DB_CONNECTION_TIMEOUT', 2000),
 });

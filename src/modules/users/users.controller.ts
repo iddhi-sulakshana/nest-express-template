@@ -1,13 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  ParseIntPipe,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, ParseIntPipe } from '@nestjs/common';
 import { UsersService } from './users.service';
 import type { User, NewUser } from '../../database/schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -27,9 +18,7 @@ export class UsersController {
   }
 
   @Get(':id')
-  async findById(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<UserResponseDto | undefined> {
+  async findById(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto | undefined> {
     const user = await this.usersService.findById(id);
     return user ? this.toUserResponseDto(user) : undefined;
   }
@@ -54,9 +43,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async delete(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<{ success: boolean }> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<{ success: boolean }> {
     const success = await this.usersService.delete(id);
     return { success };
   }

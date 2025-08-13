@@ -22,10 +22,7 @@ export class UsersService {
     return await this.usersRepository.create(userData);
   }
 
-  async update(
-    id: number,
-    userData: Partial<NewUser>,
-  ): Promise<User | undefined> {
+  async update(id: number, userData: Partial<NewUser>): Promise<User | undefined> {
     return await this.usersRepository.update(id, userData);
   }
 
