@@ -1,9 +1,10 @@
+/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import configEnvironment from './configs/environment.config';
-import { morganConfig } from './configs/morgan.config';
-import configCors from './configs/cors.config';
-import configSwagger from './configs/swagger.config';
+import configEnvironment from './config/environment.config';
+import { morganConfig } from './config/morgan.config';
+import configCors from './config/cors.config';
+import configSwagger from './config/swagger.config';
 import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {

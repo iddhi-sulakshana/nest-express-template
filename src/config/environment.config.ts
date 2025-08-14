@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import path from 'path';
 import { config } from 'dotenv-safe';
 import { Logger } from '@nestjs/common';
