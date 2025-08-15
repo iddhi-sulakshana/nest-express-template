@@ -1,17 +1,17 @@
-/* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { VendorModule } from './vendor.module';
 import {
   EnvironmentConfigService,
   CorsConfigService,
   SwaggerConfigService,
   ValidationConfigService,
   LoggingConfigService,
-} from './config/services';
+  PortConfigService,
+} from '@app/config';
 import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(VendorModule);
 
   // Get config services from the app context
   const environmentConfigService = app.get(EnvironmentConfigService);
@@ -33,7 +33,7 @@ async function bootstrap() {
   validationConfigService.configure(app);
 
   // config global prefix
-  app.setGlobalPrefix('api/v1', {
+  app.setGlobalPrefix('api/v1/vendor', {
     exclude: ['/api-docs'],
   });
 
@@ -44,16 +44,16 @@ async function bootstrap() {
 }
 
 bootstrap().then((app) => {
+  const portConfigService = app.get(PortConfigService);
+  const port = portConfigService.getVendorPort();
+
   app
-    .listen(process.env.PORT ?? 3000)
+    .listen(port)
     .then(() => {
-      Logger.log(
-        `Server is running on port http://localhost:${process.env.PORT ?? 3000}`,
-        'Config 🚧',
-      );
+      Logger.log(`Vendor Service is running on port http://localhost:${port}`, 'Config 🚧');
     })
     .catch((error) => {
-      Logger.error(error, 'Server 🚧');
+      Logger.error(error, 'Vendor Server 🚧');
       process.exit(1);
     });
 });

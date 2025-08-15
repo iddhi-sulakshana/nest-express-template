@@ -10,6 +10,7 @@ import {
   SwaggerConfigService,
   ValidationConfigService,
   LoggingConfigService,
+  PortConfigService,
 } from './services';
 
 @Global()
@@ -27,6 +28,7 @@ import {
     SwaggerConfigService,
     ValidationConfigService,
     LoggingConfigService,
+    PortConfigService,
   ],
   exports: [
     EnvironmentConfigService,
@@ -34,6 +36,7 @@ import {
     SwaggerConfigService,
     ValidationConfigService,
     LoggingConfigService,
+    PortConfigService,
   ],
 })
 export class ConfigModule {}

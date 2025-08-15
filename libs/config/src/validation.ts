@@ -16,7 +16,18 @@ export const validateEnv = (config: Record<string, any>) => {
   }
 
   // Validate the environment variables
-  if (isNaN(Number(config.PORT))) {
+  const portVariables = ['APP_PORT', 'VENDOR_PORT', 'CUSTOMER_PORT'];
+
+  portVariables.forEach((portVar) => {
+    const portValue = process.env[portVar];
+    if (portValue && isNaN(Number(portValue))) {
+      Logger.error(`${portVar} must be a number`, 'Config 🚧');
+      process.exit(1);
+    }
+  });
+
+  // Legacy PORT validation for backward compatibility
+  if (process.env.PORT && isNaN(Number(process.env.PORT))) {
     Logger.error('PORT must be a number', 'Config 🚧');
     process.exit(1);
   }

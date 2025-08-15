@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { DatabaseService } from '@/database/database.service';
-import { users } from '@/database/schema/users.schema';
+import { DatabaseService, users } from '@app/database';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
