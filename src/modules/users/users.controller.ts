@@ -1,15 +1,33 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import type { User } from '../../database/schema';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { UsersService } from './users.service';
+import { JwtGuard } from '@/auth/guard/jwt.guard';
+import { GetUser } from '@/auth/decorator/get-user.decorator';
 
+@UseGuards(JwtGuard)
 @Controller('users')
 @ApiTags('Users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
+
+  @Get('me') // calls the endpoint /users/me
+  getMe(@GetUser() user: User) {
+    return { message: 'Hello from UserController', user };
+  }
 
   @Get()
   async findAll(): Promise<UserResponseDto[]> {
