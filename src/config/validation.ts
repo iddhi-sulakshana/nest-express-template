@@ -1,22 +1,32 @@
-/* eslint-disable prettier/prettier */
-// src/config/validation.ts
-import { z } from 'zod';
-
-export const envSchema = z.object({
-  PORT: z.string().default('3000'),
-  DATABASE_URL: z.string().url({ message: 'DATABASE_URL must be a valid URL' }),
-  JWT_SECRET: z.string().min(1, 'JWT_SECRET is required'),
-  JWT_EXPIRES_IN: z.string().default('1h'),
-});
+import path from 'path';
+import { config as dotenvConfig } from 'dotenv-safe';
+import { Logger } from '@nestjs/common';
 
 // Function to validate and transform env variables
-export const validateEnv = (config: Record<string, unknown>) => {
-  const parsed = envSchema.safeParse(config);
+export const validateEnv = (config: Record<string, any>) => {
+  // constructing the path to the .env file located in root directory of the application
+  const envPath = path.join(path.resolve(), '.env');
 
-  if (!parsed.success) {
-    console.error('Invalid environment variables ❌ :', parsed.error.flatten().fieldErrors);
-    throw new Error('Invalid environment configuration.');
+  // load environment variables from the .env file
+  try {
+    dotenvConfig({ path: envPath });
+  } catch (error) {
+    Logger.error(error, 'Config 🚧');
+    process.exit(1);
   }
 
-  return parsed.data;
+  // Validate the environment variables
+  if (isNaN(Number(config.PORT))) {
+    Logger.error('PORT must be a number', 'Config 🚧');
+    process.exit(1);
+  }
+
+  try {
+    new URL(config.DATABASE_URL);
+  } catch (error) {
+    Logger.error('DATABASE_URL must be a valid URL', 'Config 🚧');
+    process.exit(1);
+  }
+
+  return config;
 };

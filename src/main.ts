@@ -1,32 +1,36 @@
 /* eslint-disable prettier/prettier */
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import configEnvironment from './config/environment.config';
-import { morganConfig } from './config/morgan.config';
-import configCors from './config/cors.config';
-import configSwagger from './config/swagger.config';
-import { Logger, ValidationPipe } from '@nestjs/common';
+import {
+  EnvironmentConfigService,
+  CorsConfigService,
+  SwaggerConfigService,
+  ValidationConfigService,
+  LoggingConfigService,
+} from './config/services';
+import { Logger } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // config environment
-  configEnvironment();
+  // Get config services from the app context
+  const environmentConfigService = app.get(EnvironmentConfigService);
+  const corsConfigService = app.get(CorsConfigService);
+  const loggingConfigService = app.get(LoggingConfigService);
+  const validationConfigService = app.get(ValidationConfigService);
+  const swaggerConfigService = app.get(SwaggerConfigService);
+
+  // config environment (already configured in service constructor)
+  environmentConfigService.configure();
 
   // config cors
-  configCors(app);
+  corsConfigService.configure(app);
 
   // Config http request logger
-  app.use(morganConfig());
+  loggingConfigService.configure(app);
 
   // config validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      // forbidNonWhitelisted: true,
-      // transform: true,
-    }),
-  );
+  validationConfigService.configure(app);
 
   // config global prefix
   app.setGlobalPrefix('api/v1', {
@@ -34,7 +38,7 @@ async function bootstrap() {
   });
 
   // config swagger
-  configSwagger(app);
+  swaggerConfigService.configure(app);
 
   return app;
 }
