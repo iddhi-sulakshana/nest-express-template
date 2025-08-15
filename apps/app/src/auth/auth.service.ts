@@ -67,8 +67,11 @@ export class AuthService {
         secret: this.config.get<string>('JWT_REFRESH_SECRET'),
       });
 
+      // hash the refresh token
+      const refreshTokenHash = await argon.hash(dto.refreshToken);
+      console.log('refreshTokenHash', refreshTokenHash);
       // Find user by refresh token
-      const user = await this.usersRepository.findByRefreshToken(dto.refreshToken);
+      const user = await this.usersRepository.findByRefreshToken(refreshTokenHash);
       if (!user) {
         throw new UnauthorizedException('Invalid refresh token');
       }
@@ -105,8 +108,7 @@ export class AuthService {
     ]);
 
     // Store refresh token hash in database
-    const refreshTokenHash = await argon.hash(refreshToken);
-    await this.usersRepository.updateRefreshToken(userId, refreshTokenHash);
+    await this.usersRepository.updateRefreshToken(userId, refreshToken);
 
     return {
       access_token: accessToken,
