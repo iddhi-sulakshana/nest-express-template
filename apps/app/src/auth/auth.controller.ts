@@ -10,13 +10,11 @@ export class AuthController {
   //POST request to /auth/signup
   @Post('signup')
   signup(@Body() dto: AuthDto) {
-    console.log('Received signup request with DTO:', dto);
     return this.authService.signUp(dto);
   }
 
   @Post('signin')
   signin(@Body() dto: LoginDto) {
-    console.log('Received signin request with DTO:', dto);
     return this.authService.signin(dto);
   }
 }
