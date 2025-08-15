@@ -45,4 +45,23 @@ export class UsersRepository {
     const result = await db.delete(users).where(eq(users.id, id)).returning();
     return result.length > 0;
   }
+
+  async updateRefreshToken(id: number, refreshToken: string | null): Promise<User | undefined> {
+    const db = this.databaseService.getDb();
+    const result = await db
+      .update(users)
+      .set({
+        refreshToken: refreshToken,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return result[0];
+  }
+
+  async findByRefreshToken(refreshToken: string): Promise<User | undefined> {
+    const db = this.databaseService.getDb();
+    const result = await db.select().from(users).where(eq(users.refreshToken, refreshToken));
+    return result[0];
+  }
 }

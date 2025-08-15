@@ -1,11 +1,11 @@
 /* eslint-disable prettier/prettier */
 import { UsersRepository } from '@app/database';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
 import * as argon from 'argon2';
-import { LoginDto } from './dto';
+import { LoginDto, RefreshTokenDto } from './dto';
 
 @Injectable()
 export class AuthService {
@@ -57,22 +57,60 @@ export class AuthService {
       throw new ForbiddenException('Credentials incorrect');
     }
 
-    return this.signToken(user.id, user.email);
+    return this.generateTokens(user.id, user.email);
   }
 
-  async signToken(userId: number, email: string): Promise<{ access_token: string }> {
-    const payload = { sub: userId, email };
+  async refreshToken(dto: RefreshTokenDto) {
+    try {
+      // Verify refresh token
+      await this.jwt.verifyAsync(dto.refreshToken, {
+        secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+      });
 
-    const secret = this.config.get<string>('JWT_SECRET');
-    if (!secret) {
-      throw new Error('JWT_SECRET is not defined in configuration');
+      // Find user by refresh token
+      const user = await this.usersRepository.findByRefreshToken(dto.refreshToken);
+      if (!user) {
+        throw new UnauthorizedException('Invalid refresh token');
+      }
+
+      // Generate new tokens
+      return this.generateTokens(user.id, user.email);
+    } catch (error) {
+      throw new UnauthorizedException('Invalid refresh token');
     }
+  }
 
-    const token = await this.jwt.signAsync(payload, {
-      expiresIn: '15m',
-      secret: secret,
-    });
+  async logout(userId: number) {
+    // Clear refresh token
+    await this.usersRepository.updateRefreshToken(userId, null);
+    return { message: 'Logged out successfully' };
+  }
 
-    return { access_token: token };
+  private async generateTokens(userId: number, email: string) {
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwt.signAsync(
+        { sub: userId, email },
+        {
+          expiresIn: this.config.get<string>('JWT_ACCESS_EXPIRES_IN'),
+          secret: this.config.get<string>('JWT_SECRET'),
+        },
+      ),
+      this.jwt.signAsync(
+        { sub: userId, email },
+        {
+          expiresIn: this.config.get<string>('JWT_REFRESH_EXPIRES_IN'),
+          secret: this.config.get<string>('JWT_REFRESH_SECRET'),
+        },
+      ),
+    ]);
+
+    // Store refresh token hash in database
+    const refreshTokenHash = await argon.hash(refreshToken);
+    await this.usersRepository.updateRefreshToken(userId, refreshTokenHash);
+
+    return {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    };
   }
 }
